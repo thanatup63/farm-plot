@@ -1,0 +1,104 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">ข้อมูลแปลงมันสำปะหลัง</h2>
+
+  <!-- Button to open the modal (Move to the top) -->
+  <div class="mb-3 text-end">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#plotModal">
+      เพิ่มข้อมูล
+    </button>
+  </div>
+
+  <!-- Table to display plots -->
+  <table class="table table-bordered">
+    <thead class="thead-dark text-center"> <!-- Center header text -->
+      <tr>
+        <th>ชื่อแปลง</th>
+        <th>ขนาด (ไร่)</th>
+        <th>ภาพแผนที่</th>
+        <th>การกระทำ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let plot of plots" class="text-center"> <!-- Center text in each row -->
+        <td>{{ plot.name }}</td>
+        <td>{{ plot.size }}</td>
+        <td>
+          <!-- Clickable image to open in modal -->
+          <img [src]="plot.mapImageUrl" alt="Map Image" class="img-thumbnail" width="150" (click)="openImageModal(plot.mapImageUrl)">
+        </td>
+        <td class="d-flex justify-content-center"> <!-- Center buttons -->
+          <button class="btn btn-primary btn-sm me-1" (click)="editPlot(plot)">แก้ไข</button>
+          <button class="btn btn-danger btn-sm me-1" (click)="deletePlot(plot)">ลบ</button>
+          <button class="btn btn-info btn-sm" (click)="viewDetails(plot)">รายละเอียด</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Modal for adding/editing plot -->
+  <div class="modal fade" id="plotModal" tabindex="-1" aria-labelledby="plotModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="plotModalLabel">{{ isEditing ? 'แก้ไขข้อมูลแปลง' : 'บันทึกข้อมูลแปลง' }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="plotName" class="form-label">ชื่อแปลง:</label>
+              <input type="text" id="plotName" class="form-control" [(ngModel)]="selectedPlot.name" name="plotName" required>
+            </div>
+            <div class="mb-3">
+              <label for="plotSize" class="form-label">ขนาด (ไร่):</label>
+              <input type="number" id="plotSize" class="form-control" [(ngModel)]="selectedPlot.size" name="plotSize" required>
+            </div>
+            <div class="mb-3">
+              <label for="plotLocation" class="form-label">ตำแหน่งแปลง:</label>
+              <button type="button" class="btn btn-info w-100" (click)="useCurrentLocation()">ใช้ตำแหน่งปัจจุบัน</button>
+            </div>
+            <div id="map" style="height: 300px;"></div>
+            <div class="d-flex justify-content-between mt-3">
+              <button type="button" class="btn btn-warning" (click)="clearMarkers()">ล้างหมุด</button>
+              <button type="submit" class="btn btn-primary">{{ isEditing ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for viewing plot details -->
+  <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailsModalLabel">รายละเอียดแปลง</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>ชื่อแปลง:</strong> {{ selectedPlot.name }}</p>
+          <p><strong>ขนาด (ไร่):</strong> {{ selectedPlot.size }}</p>
+          <p><strong>ตำแหน่งแปลง:</strong> {{ selectedPlot.location }}</p>
+          <img [src]="selectedPlot.mapImageUrl" alt="Map Image" class="img-thumbnail w-100">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for viewing full-size image -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">แสดงภาพแปลง</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img [src]="currentImageUrl" alt="Map Image" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
